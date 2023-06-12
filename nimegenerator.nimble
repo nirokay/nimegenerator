@@ -6,6 +6,7 @@ description   = "Simple random name generator."
 license       = "GPL-3.0-only"
 installExt    = @["nim"]
 bin           = @["nimegenerator"]
+skipDirs      = @["docs", "tests", "examples"]
 
 
 # Dependencies

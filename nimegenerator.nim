@@ -12,18 +12,41 @@
 ## 
 ## 
 
-import std/[random, strutils]
+import std/[os, random, strutils, parseopt]
 randomize()
 
 import nimegenerator/[globals, generator]
 export globals, generator
 
+proc helpDisplay() =
+    echo "NimeGenerator"
+    quit(0)
+
+
 when isMainModule:
-    let
-        amount: Positive = 25
-        tabIn: int = len($int amount)
+    var
+        p = initOptParser(commandLineParams())
+        amount: Positive = 1
+
+    for kind, key, value in p.getopt():
+        case kind:
+
+        of cmdEnd: break
+
+        of cmdArgument:
+            try:
+                amount = key.parseInt()
+            except CatchableError:
+                echo "Could not parse integer. Defaulting to 1..."#
+
+        of cmdLongOption, cmdShortOption:
+            case key:
+            of "help", "h": helpDisplay()
+            of "configfile", "c": loadCustomConfigFromFile(value)
+
 
     # Generate words and print them out:
+    let tabIn: int = len($int amount)
     for i in 1..amount:
         echo align($i, tabIn, ' ') & ": " & generateWord()
 
