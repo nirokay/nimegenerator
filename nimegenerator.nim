@@ -12,13 +12,18 @@
 ## 
 ## 
 
-import std/[random]
+import std/[random, strutils]
 randomize()
 
-import nimegenerator/[generator]
-export generator
+import nimegenerator/[globals, generator]
+export globals, generator
 
 when isMainModule:
-    echo "Loaded as executable!"
+    let
+        amount: Positive = 10
+        tabIn: int = len($int amount)
 
+    # Generate words:
+    for i in 1..amount:
+        echo align($i, tabIn, ' ') & ": " & generateWord()
 

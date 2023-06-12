@@ -1,4 +1,4 @@
-import std/[strformat, tables, random, sets]
+import std/[strutils, strformat, tables, random, sets]
 import ./globals, ./utils
 
 type
@@ -26,6 +26,7 @@ type
 
 var
     dictionary*: Table[char, Letter]
+    cachedVowels*: Table[char, Letter]
     cachedDefaultLetters: Table[char, seq[Letter]]
 
 
@@ -36,16 +37,8 @@ var
 
 proc decideWhatNextOperation(): Operation =
     let ran: float = rand(1.0)
-    if ran >= probability.formables: return doFormable
+    if ran >= rules.probability.formables: return doFormable
     else: return doProbableLetter
-
-proc getRandomLetter*(): Letter =
-    let ran: int = rand(dictionary.len() - 1)
-    var counter: int
-    for i, letter in dictionary:
-        if counter == ran: return letter
-        counter.inc()
-
 
 proc getAllRemainingLetters(letter: Letter): seq[Letter] =
     # Return cache for this letter, if available: (because ...
@@ -61,15 +54,41 @@ proc getAllRemainingLetters(letter: Letter): seq[Letter] =
         result.add(l)
     cachedDefaultLetters[letter.letter] = result
 
-proc getNextLetter*(curr: Letter): Letter =
-    let ran: float = rand(1.0)
-    var letterPool: seq[Letter]
 
-    if ran in probability.rarelyFloor .. probability.oftenCeil:
-        letterPool = curr.getAllRemainingLetters()
-        return letterPool.randomFrom()
+proc getRandomLetter*(): Letter =
+    ## Returns a random letter.
+    let ran: int = rand(dictionary.len() - 1)
+    var counter: int
+    for i, letter in dictionary:
+        if counter == ran: return letter
+        counter.inc()
+
+proc getLetterFromChar*(c: char): Letter =
+    ## Returns letter from dictionary. Returns a random one, if missing dictionary entry.
+    if dictionary.hasKey(c): return dictionary[c]
+    return getRandomLetter()
+
+
+proc getNextLetter*(curr: Letter): Letter =
+    ## Returns next Letter object.
+    let ran: float = rand(1.0)
+
+    # Get rare or common letters:
+    if ran < rules.probability.rarelyFloor and curr.followed.rarely.len() != 0:
+        return curr.followed.rarely.randomFrom().getLetterFromChar()
+
+    if ran > rules.probability.oftenCeil and curr.followed.often.len() != 0:
+        return curr.followed.often.randomFrom().getLetterFromChar()
+
+    # Get any other except the ones before:
+    if ran in rules.probability.rarelyFloor .. rules.probability.oftenCeil:
+        return curr.getAllRemainingLetters().randomFrom()
+
+    # Should never happen but who knows...
+    return getRandomLetter()
 
 proc getNextLetter*(curr: char): Letter =
+    ## Returns next Letter object from a char.
     var letter: Letter
     if dictionary.hasKey(curr):
         letter = dictionary[curr]
@@ -79,9 +98,39 @@ proc getNextLetter*(curr: char): Letter =
     return letter.getNextLetter()
 
 proc getNextLetter*(word: string): Letter =
+    ## Returns next Letter object from a string.
     if word.len() == 0: return getRandomLetter()
-    word[^1].getNextLetter()
+    return word[^1].getNextLetter()
 
+
+proc getWordSubstringFromLetter*(letter: Letter): string =
+    let operation: Operation = block:
+        if letter.formables.len() == 0: doProbableLetter
+        else: decideWhatNextOperation()
+
+    case operation:
+    of doFormable:
+        # Add a random formable to string:
+        return letter.formables.randomFrom()
+    of doProbableLetter:
+        # Add letter itself to string:
+        return $letter.letter
+
+proc generateWordSubstringsWithCicles*(cicles: Positive): seq[string] =
+    var
+        currentLetter: Letter = getRandomLetter()
+        previousLetter: Letter
+    
+    result.add(currentLetter.getWordSubstringFromLetter())
+    for i in 0 .. cicles:
+        previousLetter = result[^1][^1].getLetterFromChar()
+        currentLetter = previousLetter.getNextLetter()
+        result.add(currentLetter.getWordSubstringFromLetter())
+
+
+
+proc generateWordWithCicles*(cicles: Positive): string =
+    return generateWordSubstringsWithCicles(cicles).join()
 
 
 # -----------------------------------------------------------------------------
@@ -89,6 +138,7 @@ proc getNextLetter*(word: string): Letter =
 # -----------------------------------------------------------------------------
 
 proc addToDictionary*(letters: seq[Letter]) =
+    ## Adds new letters to the dictionary.
     for l in letters:
         if l.letter.int() == 0:
             echo &"Letter `{$l}` invalid, skipped..."
@@ -108,7 +158,7 @@ addToDictionary @[
     ),
     L(
         letter: 'b',
-        formables: @["br"]
+        formables: @["br", "bo", "ba"]
     ),
     L(
         letter: 'c',
@@ -300,7 +350,7 @@ addToDictionary @[
             always: @[],
             often: @[],
             rarely: @[],
-            never: @['x']
+            never: @['x', 'z']
         )
     )
 ]

@@ -5,42 +5,49 @@
 ## themselves.
 ## 
 
-import std/[random, strutils]
+import std/[strutils, random]
 import ./globals, ./letters
 
 
 # -----------------------------------------------------------------------------
-# Private procs:
+# Modify global ruleset:
 # -----------------------------------------------------------------------------
 
+proc setCustomGlobalRules*(newRules: GenerationRules) =
+    ## Change global rule set.
+    rules = newRules
 
 
 # -----------------------------------------------------------------------------
-# Public procs:
+# Public generation procs:
 # -----------------------------------------------------------------------------
 
 proc generateWord*(): string =
     ## Generates a random word
-    result.capitalizeAscii()
+    let cicles: int = abs(rand(rules.generationCicles.max) + rules.generationCicles.min)
+    result = generateWordWithCicles(cicles)
+    result = result.capitalizeAscii()
 
 proc generateWords*(amount: Positive): seq[string] =
     ## Generates multiple random words
     for i in 1 .. int amount:
         result.add(generateWord())
 
-proc generateWordCustomRule*(rule: Probability): string =
-    let backupCurrentRule: Probability = probability
-    probability = rule
+proc generateWordCustomRule*(tempRules: GenerationRules): string =
+    ## Generates a random word with temporary rule set
+    let backupCurrentRule: GenerationRules = rules
+    rules = tempRules
 
     result = generateWord()
 
-    probability = backupCurrentRule
+    rules = backupCurrentRule
 
-proc generateWordsCustomRule*(amount: Positive, rule: Probability): seq[string] =
-    let backupCurrentRule: Probability = probability
-    probability = rule
-    
+proc generateWordsCustomRule*(amount: Positive, tempRules: GenerationRules): seq[string] =
+    ## Generates multiple random words with temporary rule set
+    let backupCurrentRule: GenerationRules = rules
+    rules = tempRules
+
     for i in 1.. int amount:
         result.add(generateWord())
 
-    probability = backupCurrentRule
+    rules = backupCurrentRule
