@@ -1,0 +1,10 @@
+# Binaries:
+*.out
+*.exe
+
+# Testing:
+*test.nim
+*test
+
+# Documentation:
+docs
