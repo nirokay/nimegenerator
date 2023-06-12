@@ -20,10 +20,10 @@ export globals, generator
 
 when isMainModule:
     let
-        amount: Positive = 10
+        amount: Positive = 25
         tabIn: int = len($int amount)
 
-    # Generate words:
+    # Generate words and print them out:
     for i in 1..amount:
         echo align($i, tabIn, ' ') & ": " & generateWord()
 

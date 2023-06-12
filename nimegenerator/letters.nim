@@ -1,4 +1,4 @@
-import std/[strutils, strformat, tables, random, sets]
+import std/[strutils, strformat, tables, random, sets, options]
 import ./globals, ./utils
 
 type
@@ -118,6 +118,7 @@ proc getWordSubstringFromLetter*(letter: Letter): string =
 
 proc generateWordSubstringsWithCicles*(cicles: Positive): seq[string] =
     var
+        currentString: string
         currentLetter: Letter = getRandomLetter()
         previousLetter: Letter
     
@@ -125,8 +126,19 @@ proc generateWordSubstringsWithCicles*(cicles: Positive): seq[string] =
     for i in 0 .. cicles:
         previousLetter = result[^1][^1].getLetterFromChar()
         currentLetter = previousLetter.getNextLetter()
-        result.add(currentLetter.getWordSubstringFromLetter())
 
+        # Override current letter with vowel, if it exceeded maximum consonants:
+        # TODO (looks very inefficient, please optimize it later)
+        if rules.maxCharsWithoutVowel.isSome():
+            let maxChars: int = rules.maxCharsWithoutVowel.get()
+            if currentString.len() > maxChars: break
+            for vowel, _ in cachedVowels:
+                break
+            # Force vowel:
+            currentLetter = cachedVowels.randomFrom()
+
+        result.add(currentLetter.getWordSubstringFromLetter())
+        currentString.add(result[^1])
 
 
 proc generateWordWithCicles*(cicles: Positive): string =
@@ -146,8 +158,13 @@ proc addToDictionary*(letters: seq[Letter]) =
 
         if dictionary.hasKey(l.letter):
             echo &"Duplicate letter {l.letter}... overriding original."
-        
+
+        # Add to dictionary:
         dictionary[l.letter] = l
+
+        # Cache vowels:
+        if l.vowel:
+            cachedVowels[l.letter] = l
 
 
 addToDictionary @[

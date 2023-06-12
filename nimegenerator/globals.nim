@@ -26,9 +26,9 @@ const
         ),
         generationCicles: (
             min: 2,
-            max: 5
+            max: 10
         ),
-        maxCharsWithoutVowel: some 4
+        maxCharsWithoutVowel: some 5
     )
 
 var rules*: GenerationRules = defaultGenerationRules
