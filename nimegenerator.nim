@@ -19,6 +19,7 @@ import nimegenerator/[globals, generator]
 export globals, generator
 
 proc helpDisplay() =
+    # TODO add help info
     echo "NimeGenerator"
     quit(0)
 
