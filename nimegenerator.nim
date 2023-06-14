@@ -22,7 +22,7 @@ const
 import std/random
 randomize()
 
-import nimegenerator/[globals, generator]
+import nimegeneratorpkg/[globals, generator]
 export globals, generator
 
 
