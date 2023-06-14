@@ -53,7 +53,7 @@ nimegenerator -c:/path/to/file 10
 
 Simply import it like any other module!
 
-```nim```
+```nim
 import nimegenerator
 
 echo generateWord()
