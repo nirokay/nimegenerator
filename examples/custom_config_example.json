@@ -1,0 +1,50 @@
+{
+    "rules": {
+        "probability": {
+            "oftenCeil": 0.6,
+            "rarelyFloor": 0.2,
+            "formables": 0.1
+        },
+        "generationCicles": {
+            "min": 2,
+            "max": 10
+        },
+        "maxCharsWithoutVowel": 4
+    },
+
+    "dictionary": [
+        {
+            "letter": "a",
+            "vowel": true,
+            "followed": {
+                "always": [],
+                "often":  ["l", "t"],
+                "rarely": ["c"],
+                "never":  []
+            },
+            "formables": [
+                "ar", "al", "alt", "at"
+            ]
+        },
+        {
+            "letter": "b",
+            "followed": {
+                "always": [],
+                "often":  ["a", "e", "i", "o", "u"],
+                "rarely": ["b", "j", "k"],
+                "never":  ["q", "x", "y", "z"]
+            },
+            "formables": []
+        },
+        {
+            "letter": "q",
+            "followed": {
+                "always": ["u"],
+                "often":  [],
+                "rarely": [],
+                "never":  []
+            },
+            "formables": ["qu", "que"]
+        }
+    ]
+}

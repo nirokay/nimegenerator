@@ -8,6 +8,9 @@
 import std/[os, strutils, random]
 import ./globals, ./letters
 
+import ./customconfigloader
+export loadCustomConfigFromFile
+
 
 # -----------------------------------------------------------------------------
 # Modify global ruleset:
@@ -18,16 +21,6 @@ proc setCustomGlobalRules*(newRules: GenerationRules) =
     rules = newRules
 
 
-proc loadCustomConfigFromFile*(filepath: string) =
-    if filepath == "":
-        echo "Did not receive filepath. Using default config."
-        return
-    
-    if not filepath.fileExists():
-        echo "Invalid filepath received. Using default config."
-        return
-
-    # TODO add functionality
 
 # -----------------------------------------------------------------------------
 # Public generation procs:
