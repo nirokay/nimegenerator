@@ -1,0 +1,14 @@
+{
+    "rules": {
+        "probability": {
+            "oftenCeil": 0.7,
+            "rarelyFloor": 0.15,
+            "formables": 0.15
+        },
+        "generationCicles": {
+            "min": 4,
+            "max": 9
+        },
+        "maxCharsWithoutVowel": 5
+    }
+}

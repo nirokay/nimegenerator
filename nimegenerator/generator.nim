@@ -5,7 +5,7 @@
 ## themselves.
 ## 
 
-import std/[os, strutils, random]
+import std/[strutils, random]
 import ./globals, ./letters
 
 import ./customconfigloader

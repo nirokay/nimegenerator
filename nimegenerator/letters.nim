@@ -104,6 +104,13 @@ proc getNextLetter*(word: string): Letter =
 
 
 proc getWordSubstringFromLetter*(letter: Letter): string =
+    ## Generates a substring from a letter object.
+    ## 
+    ## Substrings can be:
+    ## 
+    ## * formables (e.g. 'e': *"er", "el"*)
+    ## * the actual letter#
+    ## 
     let operation: Operation = block:
         if letter.formables.len() == 0: doProbableLetter
         else: decideWhatNextOperation()
@@ -117,6 +124,7 @@ proc getWordSubstringFromLetter*(letter: Letter): string =
         return $letter.letter
 
 proc generateWordSubstringsWithCicles*(cicles: Positive): seq[string] =
+    ## Generates substrings for a word with a set amount of cicles.
     var
         currentString: string
         currentLetter: Letter = getRandomLetter()
@@ -142,6 +150,7 @@ proc generateWordSubstringsWithCicles*(cicles: Positive): seq[string] =
 
 
 proc generateWordWithCicles*(cicles: Positive): string =
+    ## Shortcut to `generateWordSubstringsWithCicles().join()`.
     return generateWordSubstringsWithCicles(cicles).join()
 
 
@@ -151,6 +160,9 @@ proc generateWordWithCicles*(cicles: Positive): string =
 
 proc addToDictionary*(letters: seq[Letter]) =
     ## Adds new letters to the dictionary.
+    ## 
+    ## If a letter already exists, it will be overridden (a warning is printed to stdout).
+    ## 
     for l in letters:
         if l.letter.int() == 0:
             echo &"Letter `{$l}` invalid, skipped..."
@@ -171,11 +183,23 @@ addToDictionary @[
     L(
         letter: 'a',
         vowel: true,
-        formables: @["al", "am", "an", "alt"]
+        formables: @["al", "am", "an", "alt"],
+        followed: F(
+            always: @[],
+            often: @[],
+            rarely: @['a'],
+            never: @[]
+        )
     ),
     L(
         letter: 'b',
-        formables: @["br", "bo", "ba"]
+        formables: @["br", "bo", "ba"],
+        followed: F(
+            always: @[],
+            often: @[],
+            rarely: @['v'],
+            never: @['z', 'x', 'q']
+        )
     ),
     L(
         letter: 'c',
@@ -183,8 +207,8 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @['h', 'k'],
-            rarely: @[],
-            never: @['z', 'x']
+            rarely: @['v', 'w'],
+            never: @['z', 'x', 'q']
         )
     ),
     L(
@@ -193,18 +217,30 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
-            never: @['z', 'x']
+            rarely: @['v', 'w'],
+            never: @['z', 'x', 'q']
         )
     ),
     L(
         letter: 'e',
         vowel: true,
-        formables: @["el"]
+        formables: @["el", "er"],
+        followed: F(
+            always: @[],
+            often: @['i', 'r', 'l'],
+            rarely: @['e', 'a'],
+            never: @[]
+        )
     ),
     L(
         letter: 'f',
-        formables: @["fi", "fin", "fil", "fa", "fas", "far", "fat", "fol"]
+        formables: @["fi", "fin", "fil", "fa", "fas", "far", "fat", "fol"],
+        followed: F(
+            always: @[],
+            often: @[],
+            rarely: @['v', 'w'],
+            never: @['z', 'x', 'q']
+        )
     ),
     L(
         letter: 'g',
@@ -212,18 +248,30 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
-            never: @['z', 'x']
+            rarely: @['v'],
+            never: @['z', 'x', 'q']
         )
     ),
     L(
         letter: 'h',
-        formables: @[]
+        formables: @[],
+        followed: F(
+            always: @[],
+            often: @[],
+            rarely: @['v'],
+            never: @['z', 'x', 'q', 'h']
+        )
     ),
     L(
         letter: 'i',
         vowel: true,
-        formables: @["ie", "ied", "ing", "ingen"]
+        formables: @["ie", "ied", "ing", "ingen"],
+        followed: F(
+            always: @[],
+            often: @['e'],
+            rarely: @[],
+            never: @['i']
+        )
     ),
     L(
         letter: 'j',
@@ -231,7 +279,7 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @['s', 'k', 'l', 'h', 'g', 'f', 'n', 'p', 'w'],
+            rarely: @['v','j', 's', 'k', 'l', 'h', 'g', 'f', 'n', 'p', 'w'],
             never: @['z', 'q', 'x']
         )
     ),
@@ -241,13 +289,19 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
+            rarely: @['v'],
             never: @['z', 'q', 'x']
         )
     ),
     L(
         letter: 'l',
-        formables: @[]
+        formables: @[],
+        followed: F(
+            always: @[],
+            often: @[],
+            rarely: @['v', 'l', 'w'],
+            never: @['z', 'x']
+        )
     ),
     L(
         letter: 'm',
@@ -255,8 +309,8 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
-            never: @['z']
+            rarely: @['v', 'w', 'm', 'n'],
+            never: @['z', 'x', 'q']
         )
     ),
     L(
@@ -265,23 +319,23 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
-            never: @['z']
+            rarely: @['v', 'w', 'n', 'm'],
+            never: @['z', 'x']
         )
     ),
     L(
         letter: 'o',
         vowel: true,
-        formables: @["ov", "on", "or"]
+        formables: @["ov", "on", "or", "ot", "oc", "ock"]
     ),
     L(
         letter: 'p',
         formables: @[],
         followed: F(
             always: @[],
-            often: @[],
-            rarely: @[],
-            never: @['z']
+            often: @['e', 'a'],
+            rarely: @['v', 'n', 'p', 'm'],
+            never: @['z', 'x', 'q']
         )
     ),
     L(
@@ -293,11 +347,11 @@ addToDictionary @[
     ),
     L(
         letter: 'r',
-        formables: @[],
+        formables: @["ra", "rac", "rat", "ran", "re", "rel", "ri", "ris", "rist"],
         followed: F(
             always: @[],
-            often: @[],
-            rarely: @[],
+            often: @['a', 'e', 'i', 'o', 'u'],
+            rarely: @['r', 'v', 'w', 't'],
             never: @['z', 'x']
         )
     ),
@@ -307,24 +361,24 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @['c', 'h', 's'],
-            rarely: @[],
+            rarely: @['q'],
             never: @['z', 'x']
         )
     ),
     L(
         letter: 't',
-        formables: @["tic"],
+        formables: @["tic", "tac"],  # hehe, tic-tac
         followed: F(
             always: @[],
-            often: @[],
-            rarely: @[],
+            often: @['r'],
+            rarely: @['q', 'v', 'l'],
             never: @['z', 'x']
         )
     ),
     L(
         letter: 'u',
         vowel: true,
-        formables: @[]
+        formables: @["un", "und"]
     ),
     L(
         letter: 'v',
@@ -332,7 +386,7 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
+            rarely: @['v', 'w'],
             never: @['x', 'z', 'q']
         )
     ),
@@ -342,7 +396,7 @@ addToDictionary @[
         followed: F(
             always: @[],
             often: @[],
-            rarely: @[],
+            rarely: @['w'],
             never: @['z', 'x', 'q']
         )
     ),
@@ -351,8 +405,8 @@ addToDictionary @[
         formables: @["xy", "xi"],
         followed: F(
             always: @[],
-            often: @[],
-            rarely: @[],
+            often: @['u', 'i'],
+            rarely: @['x'],
             never: @['z', 'q']
         )
     ),
@@ -362,7 +416,7 @@ addToDictionary @[
     ),
     L(
         letter: 'z',
-        formables: @[],
+        formables: @["ze", "zer"],
         followed: F(
             always: @[],
             often: @[],
