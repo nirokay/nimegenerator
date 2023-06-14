@@ -7,6 +7,7 @@ license       = "GPL-3.0-only"
 installExt    = @["nim"]
 bin           = @["nimegenerator"]
 skipDirs      = @["docs", "tests", "examples"]
+skipFiles     = @["update_docs.sh"]
 
 
 # Dependencies
