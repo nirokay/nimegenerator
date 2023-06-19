@@ -22,7 +22,7 @@ This is a library-binary hybrid. This means you can build an executable for use 
 
 ### Installation
 
-* nimble: `nimble install nimegenerator` (not yet in repos)
+* nimble: `nimble install nimegenerator`
 
 * git: `git clone https://github.com/nirokay/nimegenerator && cd nimegenerator && nimble install`
 
